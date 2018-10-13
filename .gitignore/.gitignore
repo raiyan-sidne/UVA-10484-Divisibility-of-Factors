@@ -1,0 +1,183 @@
+/****
+Given N and D, you are required to count number of N! factors that are Divisible by D.
+
+The trivial solution is to find N!, then find it's prime factors and find prime factors of D then 
+subtract the common powers and multiply all powers.
+ex. N = 10 , D = 2 
+10! = 3628800 = 2^8 3^4 5^2 7^1
+2 = 2^1
+We now want to form a number from the prime factor set of N! that is divisible by D and is a factor of N!, 
+so it must contain D as a factor.
+prime factors of N! can be raised to power from 0 to it's current power. ex. 2^8 , 2^7 , ... , 2^0
+So we can form factors of N! from this combination of powers.
+We have a total of 9 * 5 * 3 * 2 = 270 factors for 10!
+Now we want to count the factors that are divisible by D, so we need to ensure that we leave the required
+power of prime factors of D and count the remaining combinations
+We will have 8 5 3 2 = 240 factors of N! that are divisible by D 
+
+The Only Problem with this solution is finding N!. When N = 100, How are you supposed to find 100! ?
+The solution for that is to use Prime Factorial Factorization by which you can represent 100! as the product
+of it's prime factors. Another problem is the Big value of D, you should use an efficient prime factorization 
+to factorize D into it's prime factors.
+
+You should notice that, there is 2 conditions such that there will be a solution:
+1) All factors of D must exist in N
+2) Powers Of D's factors is <= powers of corresponding N's Factors
+
+----------
+Resources:
+----------
+- Prime Factorization:
+http://www.vogella.com/tutorials/JavaAl ... ticle.html
+
+- Prime Factorization of factorial:
+http://mathforum.org/library/drmath/view/67291.html
+https://answers.yahoo.com/question/inde ... 709AAVJlxi
+http://blmath.wordpress.com/2009/04/27/ ... actorials/
+
+- Legendre's Theorem
+http://www.cut-the-knot.org/blue/LegendresTheorem.shtml
+***/
+
+***THE CODE IS HERE:
+
+#include<bits/stdc++.h>
+using namespace std;
+
+#define     MAX             100000 //10^5
+#define     ss(a)           scanf("%s",a)
+#define     si(a)           scanf("%d",&a)
+#define     sii(a,b)        scanf("%d%d",&a,&b)
+#define     siii(a,b,c)     scanf("%d%d%d",&a,&b,&c)
+#define     sl(a)           scanf("%lld",&a)
+#define     sll(a,b)        scanf("%lld%lld",&a,&b)
+#define     slll(a,b,c)     scanf("%lld%lld%lld",&a,&b,&c)
+#define     sd(a)           scanf("%lf",&a)
+#define     sdd(a,b)        scanf("%lf%lf%",&a,&b)
+#define     sddd(a,b,c)     scanf("%lf%lf%lf",&a,&b,&c)
+#define     deb(a)          printf("## %d ##\n",a)
+#define     debb            printf("####\n")
+#define     pi(a)           printf("%d",a)
+#define     pl(a)           printf("%lld",a)
+#define     pd(a)           printf("%lf",a)
+#define     pc(a)           printf("%c",a)
+#define     bl              printf("\n")
+#define     spc             printf(" ")
+#define     ll              long long
+#define     llu             unsigned long long
+#define     pie             2*acos(0.0)
+#define     vi              vector<int>
+#define     vd              vector<double>
+#define     vl              vector<long long>
+#define     pb(a)           push_back(a)
+#define     pii             pair <int,int>
+#define     fl(i,a,n)       for(int i=a; i<n; i++)
+#define     rfl(i,n,a)      for(int i=n-1; i>=a; i--)
+int n, d;
+vi v;
+int prime[110];
+int arr[110];
+int main()
+{
+    fl(i,2,20)
+    {
+        if(arr[i]==0)
+        {
+            for(int j=i+i; j<110; j+=i)
+                arr[j] = i;
+        }
+    }
+    fl(i,2,101)
+        if(!arr[i]) v.pb(i);
+    int sz = v.size();
+
+    while(sii(n,d)==2)
+    {
+        if(n==0 && d==0) break;
+        d = abs(d);
+        if(n==0 && d==1)
+        {
+            printf("1\n");
+            continue;
+        }
+        if(n==0 && d!=1)
+        {
+            printf("0\n");
+            continue;
+        }
+        if(n==1 && d==1)
+        {
+            printf("1\n");
+            continue;
+        }
+        if(n==1 && d!=1)
+        {
+            printf("0\n");
+            continue;
+        }
+        fl(i,0,105) prime[i] = 1;
+        for(int i=2; i<=n; i++)
+        {
+            int tmp = i;
+            while(1)
+            {
+                if(arr[tmp]==0)
+                {
+                    prime[tmp]++;
+                    tmp /= tmp;
+                }
+                else
+                {
+                    prime[arr[tmp]]++;
+                    tmp /= arr[tmp];
+                }
+                if(tmp==1) break;
+            }
+        } ///factorization for n!
+        ///
+        rfl(i,sz,0)
+        {
+            if(d==1) break;
+            if(d%v[i]==0)
+            {
+                while(1)
+                {
+                    if(d%v[i] != 0) break;
+                    prime[v[i]]--;
+                    d = d/v[i];
+                    if(d==1) break;
+                }
+            }
+        } ///factorization for d 
+
+        if(d!=1)
+        {
+            printf("0\n");
+            continue;
+        }
+        int flag = 0;
+        ll res = 1;
+        fl(i,0,100)
+        {
+            if(prime[i]<=0)
+            {
+                flag++;
+                printf("0\n");
+                break;
+            }
+            if(prime[i]>1)
+                res *= prime[i];
+        }
+        if(flag==0)
+            printf("%lld\n",res);
+
+    }
+
+    return 0;
+}
+
+
+
+
+
+
